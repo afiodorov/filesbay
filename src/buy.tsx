@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { EthContext, ctx } from "./ethContext";
-import { BigNumberish, Contract } from "ethers";
+import { BigNumberish, Contract, BrowserProvider, BaseContract } from "ethers";
 import listings_abi_v1 from "./abi/listings.abi.json";
+import erc20_abi from "./abi/erc20.abi.json";
 import Async from "react-async";
 import "./App.css";
 
@@ -16,12 +17,28 @@ const loadNumFiles = async (contract: Contract) => {
   return numFiles;
 };
 
+async function buy(
+  owner: string,
+  spender: string,
+  priceUntyped: BigNumberish,
+  tokenContract: BaseContract
+) {
+  const allowance = await (tokenContract as any).allowance(owner, spender);
+
+  const price = BigInt(priceUntyped);
+  if (allowance < price) {
+    // ask for more allowance
+    // return
+  }
+}
+
 const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
   props
 ) => {
-  const { formatPrice, namePrice } = useContext(EthContext) as ctx;
+  const { address, formatPrice, namePrice, shortenAddress, provider } =
+    useContext(EthContext) as ctx;
   return (
-    <div className="Buy">
+    <div className="Buy" key={props.itemNum.toString()}>
       <Async
         promiseFn={async () => {
           const res = await (props.contract as any).files(props.itemNum);
@@ -43,6 +60,24 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
                 {formatPrice.get(data[3])?.call(null, data[2])}{" "}
                 {namePrice.get(data[3])}
               </pre>
+              <strong>Seller</strong>
+              <pre>{shortenAddress(data[5])}</pre>
+              {(window as any).ethereum && address && (
+                <button
+                  onClick={async () => {
+                    buy(
+                      data[5],
+                      address,
+                      data[2],
+                      new Contract(data[3], erc20_abi, provider).connect(
+                        await (provider as BrowserProvider).getSigner()
+                      )
+                    );
+                  }}
+                >
+                  Buy
+                </button>
+              )}
             </div>
           )}
         </Async.Fulfilled>
