@@ -33,6 +33,14 @@ contract Listings {
     File[] public files;
     mapping(address => uint256[]) public fileIndicesByAddress;
 
+    function numFiles() public view returns (uint256) {
+        return files.length;
+    }
+
+    function numFilesByAddress(address _address) public view returns (uint256) {
+        return fileIndicesByAddress[_address].length;
+    }
+
     function add(
         string memory _fileName,
         string memory _fileDescription,

@@ -1,8 +1,14 @@
-import React from "react";
+import { useContext } from "react";
 import { useState } from "react";
 import { EthContext, ctx } from "./ethContext";
 import listings_abi_v1 from "./abi/listings.abi.json";
-import { ethers } from "ethers";
+import {
+  BrowserProvider,
+  Contract,
+  parseUnits,
+  Transaction,
+  TransactionReceipt,
+} from "ethers";
 
 async function listItem(
   fileName: string,
@@ -10,15 +16,15 @@ async function listItem(
   price: string,
   priceToken: string,
   priceDecimals: number,
-  to: string
+  to: string,
+  provider: BrowserProvider
 ): Promise<boolean> {
-  const provider = new ethers.BrowserProvider((window as any).ethereum);
-  const listingContract = new ethers.Contract(to, listings_abi_v1, provider);
+  const listingContract = new Contract(to, listings_abi_v1, provider);
   const signer = await provider.getSigner();
   const connected = listingContract.connect(signer);
-  const amount = ethers.parseUnits(price, priceDecimals);
+  const amount = parseUnits(price, priceDecimals);
 
-  let tx: ethers.Transaction | null = null;
+  let tx: Transaction | null = null;
 
   try {
     tx = await (connected as any).add(fileName, fileDesc, amount, priceToken);
@@ -30,7 +36,7 @@ async function listItem(
     return false;
   }
 
-  let txReceipt: ethers.TransactionReceipt | null = null;
+  let txReceipt: TransactionReceipt | null = null;
 
   try {
     txReceipt = await provider.waitForTransaction(tx.hash);
@@ -57,8 +63,7 @@ export default function Sell() {
   const [price, setPrice] = useState(Number(0));
   const [currency, setCurrency] = useState<number>(0);
   const [sending, setSending] = useState<boolean>(false);
-
-  const { address, config } = React.useContext(EthContext) as ctx;
+  const { address, config, provider } = useContext(EthContext) as ctx;
 
   const options = config.priceTokens.map((el, i) => (
     <option value={i} key={i}>
@@ -67,6 +72,11 @@ export default function Sell() {
   ));
 
   const listItemHandler = async () => {
+    if (!(provider instanceof BrowserProvider)) {
+      console.log("wrong etheres provider, website is read-only");
+      return;
+    }
+
     setSending(true);
 
     if (
@@ -76,7 +86,8 @@ export default function Sell() {
         price.toString(10),
         config.priceTokens[currency].address,
         config.priceTokens[currency].decimals,
-        config.contractAddress
+        config.contractAddress,
+        provider as BrowserProvider
       )
     ) {
       setTitle("");
@@ -91,7 +102,7 @@ export default function Sell() {
   return (
     <div className="Sell">
       <div className="SellRow">
-        <p>Filename</p>
+        <strong>Filename</strong>
         <input
           type="text"
           value={title}
@@ -101,7 +112,7 @@ export default function Sell() {
         />
       </div>
       <div className="SellRow">
-        <p>Description</p>
+        <strong>Description</strong>
         <textarea
           value={desc}
           onChange={(e) => {
@@ -111,7 +122,7 @@ export default function Sell() {
         />
       </div>
       <div className="SellRow">
-        <p>Price</p>
+        <strong>Price</strong>
         <input
           type="number"
           step="0.0001"
@@ -134,7 +145,7 @@ export default function Sell() {
           {address && !sending && (
             <button onClick={listItemHandler}>List File For Sale</button>
           )}
-          {address && sending && <div>Sending...</div>}
+          {address && sending && "Sending..."}
         </p>
       </div>
     </div>
