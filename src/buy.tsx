@@ -34,7 +34,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
         <Async.Fulfilled>
           {(data: Array<any>) => (
             <div>
-              <strong>Title</strong>
+              <strong>File</strong>
               <pre>{data[0]}</pre>
               <strong>Description</strong>
               <pre>{data[1]}</pre>
@@ -67,7 +67,7 @@ const AllItems: React.FC<{ contract: Contract }> = (props) => {
         <Async.Resolved>
           {(data: bigint) => {
             const rows = [];
-            for (let i = 0n; i < data; i++) {
+            for (let i = data - 1n; i >= 0; i--) {
               rows.push(Item({ contract: props.contract, itemNum: i }));
             }
             return <>{rows}</>;

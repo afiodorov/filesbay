@@ -101,8 +101,8 @@ export default function Sell() {
 
   return (
     <div className="Sell">
-      <div className="SellRow">
-        <strong>Filename</strong>
+      <strong>File</strong>
+      <pre>
         <input
           type="text"
           value={title}
@@ -110,9 +110,9 @@ export default function Sell() {
             setTitle(e.target.value);
           }}
         />
-      </div>
-      <div className="SellRow">
-        <strong>Description</strong>
+      </pre>
+      <strong>Description</strong>
+      <pre>
         <textarea
           value={desc}
           onChange={(e) => {
@@ -120,9 +120,9 @@ export default function Sell() {
           }}
           className="SellDescription"
         />
-      </div>
-      <div className="SellRow">
-        <strong>Price</strong>
+      </pre>
+      <strong>Price</strong>
+      <pre>
         <input
           type="number"
           step="0.0001"
@@ -139,15 +139,13 @@ export default function Sell() {
         >
           {options}
         </select>
-      </div>
-      <div className="SellRow">
-        <p>
-          {address && !sending && (
-            <button onClick={listItemHandler}>List File For Sale</button>
-          )}
-          {address && sending && "Sending..."}
-        </p>
-      </div>
+      </pre>
+      <p>
+        {address && !sending && (
+          <button onClick={listItemHandler}>List File For Sale</button>
+        )}
+        {address && sending && "Sending..."}
+      </p>
     </div>
   );
 }
