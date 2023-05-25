@@ -15,14 +15,7 @@ import Async from "react-async";
 import "./App.css";
 
 const loadNumFiles = async (contract: Contract) => {
-  let numFiles: number | null = null;
-  numFiles = await (contract as any).numFiles();
-
-  if (!numFiles) {
-    return 0;
-  }
-
-  return numFiles;
+  return await (contract as any).numFiles();
 };
 
 async function buy(

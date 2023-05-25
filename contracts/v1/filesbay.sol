@@ -28,6 +28,7 @@ contract Listings {
         address priceTokenAddress;
         address itemAddress;
         address seller; // add this line
+        bytes encryptedMessage;
     }
 
     File[] public files;
@@ -55,7 +56,8 @@ contract Listings {
                 _price,
                 _tokenAddress,
                 address(newItem),
-                msg.sender
+                msg.sender,
+                ""
             )
         );
         fileIndicesByAddress[msg.sender].push(files.length - 1);
@@ -69,18 +71,10 @@ contract Listings {
         address _newTokenAddress
     ) public {
         require(_fileIndex < files.length, "Invalid file index");
-
-        uint256[] memory addedFileIndices = fileIndicesByAddress[msg.sender];
-        bool hasPermission = false;
-
-        for (uint256 i = 0; i < addedFileIndices.length; i++) {
-            if (addedFileIndices[i] == _fileIndex) {
-                hasPermission = true;
-                break;
-            }
-        }
-
-        require(hasPermission, "This file doesn't belong to you");
+        require(
+            files[_fileIndex].seller == msg.sender,
+            "This file doesn't belong to you"
+        );
 
         files[_fileIndex].fileName = _newFileName;
         files[_fileIndex].fileDescription = _newDescription;
@@ -106,5 +100,18 @@ contract Listings {
         );
 
         Item(file.itemAddress).mint(msg.sender);
+    }
+
+    function setEncryptedMessage(
+        uint256 _fileIndex,
+        bytes memory _encryptedMessage
+    ) public {
+        require(_fileIndex < files.length, "Invalid file index");
+        require(
+            files[_fileIndex].seller == msg.sender,
+            "This file doesn't belong to you"
+        );
+
+        files[_fileIndex].encryptedMessage = _encryptedMessage;
     }
 }
