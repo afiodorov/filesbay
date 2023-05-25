@@ -152,68 +152,74 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
   const [progress, setProgress] = useState(false);
 
   return (
-    <div className="Buy" key={props.itemNum.toString()}>
-      <Async
-        promiseFn={async () => {
-          const res = await (props.contract as any).files(props.itemNum);
-          return res as Array<any>;
-        }}
-      >
-        <Async.Pending>
-          <>Loading item {props.itemNum}...</>
-        </Async.Pending>
-        <Async.Fulfilled>
-          {(data: Array<any>) => {
-            const onClick = async () => {
-              setProgress(true);
-              await buy(
-                props.itemNum,
-                address || "",
-                config.contractAddress,
-                data[2],
-                new Contract(data[3], erc20_abi, provider).connect(
-                  await (provider as BrowserProvider).getSigner()
-                ),
-                provider as BrowserProvider
-              );
-              setProgress(false);
-            };
+    <Async
+      key={props.itemNum.toString()}
+      promiseFn={async () => {
+        const res = await (props.contract as any).files(props.itemNum);
+        return res as Array<any>;
+      }}
+    >
+      <Async.Pending>
+        <>Loading item {props.itemNum}...</>
+      </Async.Pending>
+      <Async.Fulfilled>
+        {(data: Array<any>) => {
+          if (data[5].toLowerCase() === address?.toLowerCase()) {
+            return <></>;
+          }
 
-            return (
-              <div>
-                <strong>File</strong>
-                <pre>{data[0]}</pre>
-                <strong>Description</strong>
-                <pre>{data[1]}</pre>
-                <strong>Price</strong>
-                <pre>
-                  {formatPrice.get(data[3])?.call(null, data[2])}{" "}
-                  {namePrice.get(data[3])}
-                </pre>
-                <strong>Seller</strong>
-                <pre>{shortenAddress(data[5])}</pre>
-                {(window as any).ethereum && address && (
-                  <BuyButton
-                    nftAddress={data[4]}
-                    onClick={onClick}
-                    progress={progress}
-                  />
-                )}
-              </div>
+          const onClick = async () => {
+            if (progress) {
+              return;
+            }
+            setProgress(true);
+            await buy(
+              props.itemNum,
+              address || "",
+              config.contractAddress,
+              data[2],
+              new Contract(data[3], erc20_abi, provider).connect(
+                await (provider as BrowserProvider).getSigner()
+              ),
+              provider as BrowserProvider
             );
-          }}
-        </Async.Fulfilled>
-        <Async.Rejected>
-          {(error) => {
-            return (
-              <>
-                Error getting item {props.itemNum}: {error}
-              </>
-            );
-          }}
-        </Async.Rejected>
-      </Async>
-    </div>
+            setProgress(false);
+          };
+
+          return (
+            <div className="Buy">
+              <strong>File</strong>
+              <pre>{data[0]}</pre>
+              <strong>Description</strong>
+              <pre>{data[1]}</pre>
+              <strong>Price</strong>
+              <pre>
+                {formatPrice.get(data[3])?.call(null, data[2])}{" "}
+                {namePrice.get(data[3])}
+              </pre>
+              <strong>Seller</strong>
+              <pre>{shortenAddress(data[5])}</pre>
+              {(window as any).ethereum && address && (
+                <BuyButton
+                  nftAddress={data[4]}
+                  onClick={onClick}
+                  progress={progress}
+                />
+              )}
+            </div>
+          );
+        }}
+      </Async.Fulfilled>
+      <Async.Rejected>
+        {(error) => {
+          return (
+            <>
+              Error getting item {props.itemNum}: {error}
+            </>
+          );
+        }}
+      </Async.Rejected>
+    </Async>
   );
 };
 
