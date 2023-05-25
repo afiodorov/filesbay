@@ -14,10 +14,6 @@ import item_abi from "./abi/item.abi.json";
 import Async from "react-async";
 import "./App.css";
 
-const loadNumFiles = async (contract: Contract) => {
-  return await (contract as any).numFiles();
-};
-
 async function buy(
   itemNum: BigNumberish,
   owner: string,
@@ -207,7 +203,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
         {(error) => {
           return (
             <>
-              Error getting item {props.itemNum}: {error}
+              Error getting item {props.itemNum}: {JSON.stringify(error)}
             </>
           );
         }}
@@ -219,7 +215,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
 const AllItems: React.FC<{ contract: Contract }> = (props) => {
   return (
     <>
-      <Async promiseFn={loadNumFiles.bind(null, props.contract)}>
+      <Async promiseFn={async () => await (props.contract as any).numFiles()}>
         <Async.Resolved>
           {(data: bigint) => {
             const rows = [];
