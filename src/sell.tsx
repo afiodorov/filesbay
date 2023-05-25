@@ -73,7 +73,7 @@ const AllItems: React.FC<{ contract: Contract }> = (props) => {
             for (let i = data - 1n; i >= 0; i--) {
               rows.push(Item({ contract: props.contract, itemNum: i }));
             }
-            if (rows) {
+            if (rows.length > 0) {
               return (
                 <>
                   <h1>Selling Items</h1>
