@@ -27,7 +27,7 @@ contract Listings {
         uint256 price;
         address priceTokenAddress;
         address itemAddress;
-        address seller; // add this line
+        address seller;
         bytes encryptedMessage;
     }
 
@@ -49,6 +49,8 @@ contract Listings {
         address _tokenAddress
     ) public {
         Item newItem = new Item(_fileName);
+        newItem.mint(msg.sender);
+
         files.push(
             File(
                 _fileName,

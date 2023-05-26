@@ -3,7 +3,6 @@ import { useState } from "react";
 import { EthContext, ctx } from "./ethContext";
 import listings_abi_v1 from "./abi/listings.abi.json";
 import {
-  BigNumberish,
   BrowserProvider,
   Contract,
   parseUnits,

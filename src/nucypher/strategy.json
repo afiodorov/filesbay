@@ -1,0 +1,20 @@
+{
+  "policy": {
+    "id": "base64:NBHJ+Ym19gEyDEUYQM9WMg==",
+    "label": "test",
+    "policyKey": "base64:A+c1uflT7laYLm+EicKLeUguBhlyF/bJpTHxnS1fhV3c",
+    "encryptedTreasureMap": "base64:RU1hcAABAACSxGICfcnP1n1GYXhu1D+foxtGk6oWiTSwhEsYaWJTJLBhrd4CCDTbj/8tlxynWSckJT35rh2lt0T+pLzWGjgmdirJBdJT4nkAz89SEbvWmd72zkiqn8dKPWKOsW5/widH9NspwcUCxl5HFGie2cMHOS7fNxySl8gBo74V+UOXnN7rnu2oMacqd7jfJgtz8J1Ku1NNcNnv2e7on94xYtfUU3Q57oT4Nc13D1xSITEuMVhX8wef5FgrEnGmqsGp0Ng3E7jX7EvdNnNPwK1kRksUvjam7RpP4cKEp29Fb9Q6hXAiKhgmuU7NmtTU5+SX1rcjxx8cES0nyQchldLyVcB4S7OndAB6iDzOKjocLKYQRqAloD4qGAB1IyUfuofLdQ2lj+dRTRv0E97fg7SFUb4Wyvrz29nqOuSfuymiWKNmT5hcL7VY9YqOGRvGxYpov97mdEILVfS2YfGo/tNca6bmWNDO2YKzUxdTLgzPNj0yz8s3UMGfyRUKgDcUtgAAG+vv1Z8hpfcCJZIFbzqOO5E5QClKSG6MBuwR4fSpDo2lRyv7ZZm4JGrSljDHMY+C5r/keX744V+oB1kyI+iqUdVHd36Lwu53MCgATOUT76p3jBBOhNiRXx25I9vTfpjx+g5ddBAsJr/SKO+j9bX4vuPnaSdrNpyb9yAAgnhqqokjDS/g7k8HH0U6kkFTnLF8qhQL+raVI/rEQZ2Grd47RXgPReK0qahvYrnG6y8qanssZf7RTbG49iT35HLArrW9cf73qUvTo43t0TlF826gpaWhFJ4ZGKoPP/OZ/XsqrtNiHimPRl34xi3iNB8bwIU/kbzXATI/VzAFA0XvBl8KRhXeMsgcdyOM8YKO0fNEsbCkyNw8RcPRLpPkSpdnn5zXGcKWuoHsfUY0X4uVb5+NrOfXrZQ2mkOMjyPvlYEPG+edS/ACZ0QiIZAx2ONEpcIrQ9j7V/0EMvVyrgL9JCTA0LywOFUvuQ6MaFlC4+D97euu7LVTZOWNav7u+J/v6elbMJD5dWr95nrxwZZFOt3fOCxL/67tORxSi/YZG4clbrSZ1sCeAZx0JL0mGdbwPsuU",
+    "aliceVerifyingKey": "base64:A/T/zDcMigNP79BwHRjpRpDKU3Sv97BRYpZxE2g/RFZM",
+    "size": 1,
+    "startTimestamp": "2023-05-26T09:37:05.257Z",
+    "endTimestamp": "2023-06-25T09:37:05.257Z",
+    "txHash": "0x0832b9c1f9f7d46ed2a77e694d5b3eafaaacb8589e36f478fa8e80060eeccdbc"
+  },
+  "cohortConfig": {
+    "ursulaAddresses": ["0x05Be6D76d2282D24691E28E3Dc1c1A9709d70fa1"],
+    "threshold": 1,
+    "shares": 1,
+    "porterUri": "https://porter-tapir.nucypher.community"
+  },
+  "bobSecretKeyBytes": "base64:H6r9huYMKgwYo0oG12kor8GchPjmmPFVgvMfeTvq8Mg="
+}

@@ -15,7 +15,7 @@ export const Config: Map<string, Env> = new Map();
 
 Config.set("0x2a", {
   rpcURL: "http://localhost:8545",
-  contractAddress: "0x284BDAA2441BF8A20DaB8069a4BCF98403da99F8",
+  contractAddress: "0xC11B5E62c7bCE6396C82fBD9830DC98A8c39b7DB",
   chainID: "0x2a",
   priceTokens: [
     {
