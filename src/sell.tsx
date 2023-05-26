@@ -31,11 +31,13 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
         {(data: Array<any>) => {
           return (
             <EditableItem
+              fileNum={props.itemNum}
               title={data[0]}
               desc={data[1]}
               price={formatPrice.get(data[3])?.call(null, data[2])!}
               currency={namePrice.get(data[3])!}
               encryptedMessage={data[6]}
+              nftAddress={data[4]}
             />
           );
         }}

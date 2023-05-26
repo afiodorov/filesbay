@@ -5,12 +5,9 @@ import Sell from "./sell";
 import Buy from "./buy";
 import { EthContext, ctx } from "./ethContext";
 import { BrowserProvider } from "ethers";
-import { encrypt } from "./encryption";
 
 export default function App() {
   const { setAddress } = React.useContext<ctx | null>(EthContext) as ctx;
-
-  console.log(encrypt("my encrypted message"));
 
   if ((window as any).ethereum) {
     (window as any).ethereum.on("accountsChanged", (accounts: string[]) => {

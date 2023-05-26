@@ -12,7 +12,7 @@ import listings_abi_v1 from "./abi/listings.abi.json";
 import erc20_abi from "./abi/erc20.abi.json";
 import item_abi from "./abi/item.abi.json";
 import Async from "react-async";
-import "./App.css";
+import { decrypt, fromHexString } from "./encryption";
 
 async function buy(
   itemNum: BigNumberish,
@@ -96,8 +96,10 @@ const BuyButton: React.FC<{
   nftAddress: string;
   onClick: MouseEventHandler;
   progress: boolean;
+  encryptedMessage: string;
 }> = (props) => {
   const { address, provider } = useContext(EthContext) as ctx;
+  const [decrypted, setDecrypted] = useState("");
 
   if (!address) {
     return <></>;
@@ -122,7 +124,20 @@ const BuyButton: React.FC<{
                 </button>
               );
             }
-            return <button>Bought</button>;
+
+            (async () => {
+              const decoded = fromHexString(props.encryptedMessage);
+              if (decoded.length > 0) {
+                setDecrypted(await decrypt(decoded));
+              }
+            })();
+
+            return (
+              <>
+                <button>Bought</button>
+                <div>Secret: {decrypted}</div>
+              </>
+            );
           }}
         </Async.Resolved>
         <Async.Loading>
@@ -193,6 +208,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
                   nftAddress={data[4]}
                   onClick={onClick}
                   progress={progress}
+                  encryptedMessage={data[6]}
                 />
               )}
             </div>

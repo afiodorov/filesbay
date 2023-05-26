@@ -3,12 +3,14 @@ import { useState } from "react";
 import { EthContext, ctx } from "./ethContext";
 import listings_abi_v1 from "./abi/listings.abi.json";
 import {
+  BigNumberish,
   BrowserProvider,
   Contract,
   parseUnits,
   Transaction,
   TransactionReceipt,
 } from "ethers";
+import { decrypt, encrypt, fromHexString } from "./encryption";
 
 async function listItem(
   fileName: string,
@@ -57,21 +59,94 @@ async function listItem(
   return true;
 }
 
+async function setMessage(
+  fileNum: BigNumberish,
+  msg: Uint8Array,
+  listingContractAddr: string,
+  provider: BrowserProvider
+) {
+  const listingContract = new Contract(
+    listingContractAddr,
+    listings_abi_v1,
+    provider
+  );
+  const signer = await provider.getSigner();
+  const connected = listingContract.connect(signer);
+
+  let tx: Transaction | null = null;
+
+  try {
+    tx = await (connected as any).setEncryptedMessage(fileNum, msg);
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!tx || !tx.hash) {
+    return false;
+  }
+
+  let txReceipt: TransactionReceipt | null = null;
+
+  try {
+    txReceipt = await provider.waitForTransaction(tx.hash);
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!txReceipt) {
+    return false;
+  }
+
+  if (txReceipt.status !== 1) {
+    console.log(txReceipt);
+
+    return false;
+  }
+
+  return true;
+}
+
 export const EditableItem: React.FC<{
+  fileNum: BigNumberish;
   title: string;
   desc: string;
   price: string;
   currency: string;
   encryptedMessage: string;
+  nftAddress: string;
 }> = (props) => {
   const [title, setTitle] = useState(props.title);
   const [desc, setDesc] = useState(props.desc);
-  const [encryptedMessage, setEncryptedMessage] = useState(
-    props.encryptedMessage
-  );
+  const [encryptedMessage, setEncryptedMessage] = useState("");
   const [price, setPrice] = useState(Number(props.price));
   const [sending, setSending] = useState<boolean>(false);
   const { address, config, provider } = useContext(EthContext) as ctx;
+
+  (async () => {
+    const decoded = fromHexString(props.encryptedMessage);
+    if (decoded.length > 0) {
+      setEncryptedMessage(await decrypt(decoded));
+    }
+  })();
+
+  const setEncryptedMessageHandler = async () => {
+    if (!(provider instanceof BrowserProvider)) {
+      console.log("wrong etheres provider, website is read-only");
+      return;
+    }
+
+    setSending(true);
+
+    const rawMsg = encrypt(
+      encryptedMessage,
+      props.nftAddress,
+      Number(config.chainID)
+    );
+
+    await setMessage(props.fileNum, rawMsg, config.contractAddress, provider);
+
+    setSending(false);
+  };
 
   return (
     <div className="Sell">
@@ -118,7 +193,11 @@ export const EditableItem: React.FC<{
         {props.currency}
       </pre>
       <p>
-        {address && !sending && <button>Set Encrypted Message</button>}
+        {address && !sending && (
+          <button onClick={setEncryptedMessageHandler}>
+            Set Encrypted Message
+          </button>
+        )}
         {address && sending && "Setting Encrypted Message..."}
       </p>
     </div>

@@ -1,3 +1,5 @@
+import { MessageKit } from "@nucypher/nucypher-ts";
+
 import {
   ConditionSet,
   Conditions,
@@ -7,16 +9,30 @@ import {
 import strategy from "./nucypher/strategy.json";
 import { providers } from "ethers5";
 
-export async function encrypt(msg: string) {
+export function fromHexString(hexString: string): Uint8Array {
+  const m = hexString.substring(2).match(/.{1,2}/g);
+
+  if (!m) {
+    return new Uint8Array([]);
+  }
+
+  return Uint8Array.from(m.map((byte: string) => parseInt(byte, 16)));
+}
+
+export function encrypt(
+  msg: string,
+  nftAddress: string,
+  chainID: number
+): Uint8Array {
   const conditions = new Conditions.EvmCondition({
-    contractAddress: "0x932Ca55B9Ef0b3094E8Fa82435b3b4c50d713043",
-    chain: 5,
+    contractAddress: nftAddress,
+    chain: chainID,
     standardContractType: "ERC721",
     method: "balanceOf",
     parameters: [":userAddress"],
     returnValueTest: {
-      comparator: ">=",
-      value: "1",
+      comparator: ">",
+      value: "0",
     },
   });
 
@@ -26,11 +42,16 @@ export async function encrypt(msg: string) {
   depStrategy.encrypter.conditions = conditionSet;
 
   const ciphertext = depStrategy.encrypter.encryptMessage(msg);
+  return ciphertext.toBytes();
+}
 
+export async function decrypt(msg: Uint8Array): Promise<string> {
+  const depStrategy = DeployedStrategy.fromJSON(JSON.stringify(strategy));
   const web3Provider = new providers.Web3Provider((window as any).ethereum);
+  const mk = MessageKit.fromBytes(msg);
 
   const retrievedMessages = await depStrategy.decrypter.retrieve(
-    [ciphertext],
+    [mk],
     web3Provider
   );
 
@@ -38,14 +59,10 @@ export async function encrypt(msg: string) {
     if (mk.isDecryptableByReceiver()) {
       return depStrategy!.decrypter.decrypt(mk);
     }
+    console.log(mk.errors);
 
-    if (Object.values(mk.errors).length > 0) {
-      console.log(mk.errors);
-    }
     return new Uint8Array([]);
   });
 
-  console.log(new TextDecoder().decode(decryptedMessages[0]));
-
-  return "a";
+  return new TextDecoder().decode(decryptedMessages[0]);
 }
