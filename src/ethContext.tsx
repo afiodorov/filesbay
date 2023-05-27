@@ -6,6 +6,7 @@ import {
 } from "ethers";
 import React, { useState } from "react";
 import { defaultChain, Config, Env } from "./config";
+import { EnsLooker } from "./ens";
 
 function shortenAddress(address: string): string {
   const digits = 4;
@@ -23,6 +24,7 @@ export type ctx = {
   setProvider: React.Dispatch<React.SetStateAction<AbstractProvider>>;
   formatPrice: Map<string, (_: BigNumberish) => string>;
   namePrice: Map<string, string>;
+  ensLooker: EnsLooker;
 };
 
 export const EthContext = React.createContext<ctx | null>(null);
@@ -48,6 +50,8 @@ export const EthContextProvider: React.FC<Props> = ({ children }) => {
     namePrice.set(val.address, val.symbol);
   });
 
+  const ensLooker = new EnsLooker();
+
   return (
     <EthContext.Provider
       value={{
@@ -60,6 +64,7 @@ export const EthContextProvider: React.FC<Props> = ({ children }) => {
         setProvider,
         formatPrice,
         namePrice,
+        ensLooker,
       }}
     >
       {children}

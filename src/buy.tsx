@@ -151,8 +151,15 @@ const BuyButton: React.FC<{
 const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
   props
 ) => {
-  const { address, formatPrice, namePrice, shortenAddress, provider, config } =
-    useContext(EthContext) as ctx;
+  const {
+    address,
+    formatPrice,
+    namePrice,
+    shortenAddress,
+    provider,
+    config,
+    ensLooker,
+  } = useContext(EthContext) as ctx;
   const [progress, setProgress] = useState(false);
 
   return (
@@ -168,6 +175,15 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
       </Async.Pending>
       <Async.Fulfilled>
         {(data: Array<any>) => {
+          const [seller, setSeller] = useState(shortenAddress(data[5]));
+
+          (async () => {
+            const ensName = await ensLooker.reverseLookup(data[5]);
+            if (ensName) {
+              setSeller(ensName);
+            }
+          })();
+
           if (data[5].toLowerCase() === address?.toLowerCase()) {
             return <></>;
           }
@@ -202,7 +218,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
                 {namePrice.get(data[3])}
               </pre>
               <strong>Seller</strong>
-              <pre>{shortenAddress(data[5])}</pre>
+              <pre>{seller}</pre>
               {(window as any).ethereum && address && (
                 <BuyButton
                   nftAddress={data[4]}
