@@ -1,5 +1,5 @@
 import { EthContext, ctx } from "./ethContext";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { BigNumberish, Contract } from "ethers";
 import SellNew from "./sellNew";
 import { EditableItem } from "./sellNew";
@@ -55,7 +55,7 @@ const Item: React.FC<{ contract: Contract; itemNum: BigNumberish }> = (
   );
 };
 
-const AllItems: React.FC<{ contract: Contract }> = (props) => {
+const AllItems: React.FC<{ contract: Contract; items: number[] }> = (props) => {
   const { address } = useContext(EthContext) as ctx;
 
   if (!address) {
@@ -75,7 +75,7 @@ const AllItems: React.FC<{ contract: Contract }> = (props) => {
             for (let i = data - 1n; i >= 0; i--) {
               rows.push(Item({ contract: props.contract, itemNum: i }));
             }
-            if (rows.length > 0) {
+            if (rows.length > 0 || props.items.length > 0) {
               return (
                 <>
                   <h1>Selling Items</h1>
@@ -95,6 +95,7 @@ const AllItems: React.FC<{ contract: Contract }> = (props) => {
 
 export default () => {
   const { config, provider } = useContext(EthContext) as ctx;
+  const [addedItems, setAddedItems] = useState<number[]>([]);
 
   const listingContract = new Contract(
     config.contractAddress,
@@ -104,8 +105,8 @@ export default () => {
 
   return (
     <>
-      <SellNew />
-      <AllItems contract={listingContract} />
+      <SellNew setAddedItems={setAddedItems} />
+      <AllItems contract={listingContract} items={addedItems} />
     </>
   );
 };

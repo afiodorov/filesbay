@@ -204,7 +204,9 @@ export const EditableItem: React.FC<{
   );
 };
 
-export default function SellNew() {
+export default function SellNew(props: {
+  setAddedItems: React.Dispatch<React.SetStateAction<number[]>>;
+}) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(Number(0));
@@ -226,8 +228,10 @@ export default function SellNew() {
 
     setSending(true);
 
+    let added = false;
+
     if (
-      await listItem(
+      (added = await listItem(
         title,
         desc,
         price.toString(10),
@@ -235,12 +239,17 @@ export default function SellNew() {
         config.priceTokens[currency].decimals,
         config.contractAddress,
         provider as BrowserProvider
-      )
+      ))
     ) {
       setTitle("");
       setDesc("");
       setPrice(0);
       setCurrency(0);
+    }
+
+    if (added) {
+      // forces a rerender of selling items; exact number doesn't matter
+      props.setAddedItems([1]);
     }
 
     setSending(false);

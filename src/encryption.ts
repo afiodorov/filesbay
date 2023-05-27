@@ -48,7 +48,15 @@ export function encrypt(
 export async function decrypt(msg: Uint8Array): Promise<string> {
   const depStrategy = DeployedStrategy.fromJSON(JSON.stringify(strategy));
   const web3Provider = new providers.Web3Provider((window as any).ethereum);
-  const mk = MessageKit.fromBytes(msg);
+  let mk: MessageKit;
+
+  try {
+    mk = MessageKit.fromBytes(msg);
+  } catch (e) {
+    console.log("couldn't deserialize");
+    console.log(e);
+    return "";
+  }
 
   const retrievedMessages = await depStrategy.decrypter.retrieve(
     [mk],
