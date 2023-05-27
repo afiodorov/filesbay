@@ -17,6 +17,8 @@ function shortenAddress(address: string): string {
 export type ctx = {
   address: string | null;
   setAddress: React.Dispatch<React.SetStateAction<string | null>>;
+  displayAddr: string | null;
+  setDisplayAddr: React.Dispatch<React.SetStateAction<string | null>>;
   shortenAddress: typeof shortenAddress;
   config: Env;
   setConfig: React.Dispatch<React.SetStateAction<Env>>;
@@ -35,6 +37,7 @@ interface Props {
 
 export const EthContextProvider: React.FC<Props> = ({ children }) => {
   const [address, setAddress] = useState<string | null>(null);
+  const [displayAddr, setDisplayAddr] = useState<string | null>(null);
   const [config, setConfig] = useState<Env>(Config.get(defaultChain)!);
   const [provider, setProvider] = useState<AbstractProvider>(
     new JsonRpcProvider(config.rpcURL)
@@ -57,6 +60,8 @@ export const EthContextProvider: React.FC<Props> = ({ children }) => {
       value={{
         address,
         setAddress,
+        displayAddr,
+        setDisplayAddr,
         shortenAddress,
         config,
         setConfig,

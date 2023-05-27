@@ -7,11 +7,19 @@ import { EthContext, ctx } from "./ethContext";
 import { BrowserProvider } from "ethers";
 
 export default function App() {
-  const { setAddress } = React.useContext<ctx | null>(EthContext) as ctx;
+  const { setAddress, shortenAddress, ensLooker, setDisplayAddr } =
+    React.useContext<ctx | null>(EthContext) as ctx;
 
   if ((window as any).ethereum) {
     (window as any).ethereum.on("accountsChanged", (accounts: string[]) => {
       setAddress(accounts[0]);
+      setDisplayAddr(shortenAddress(accounts[0]));
+      (async () => {
+        const ensName = await ensLooker.reverseLookup(accounts[0]);
+        if (ensName) {
+          setDisplayAddr(ensName);
+        }
+      })();
     });
 
     (window as any).ethereum.on("chainChanged", (_: string) => {});
@@ -29,14 +37,26 @@ export default function App() {
 }
 
 function Layout() {
-  const { address, setAddress, setProvider, shortenAddress } = React.useContext(
-    EthContext
-  ) as ctx;
+  const {
+    address,
+    setAddress,
+    setProvider,
+    shortenAddress,
+    ensLooker,
+    displayAddr,
+    setDisplayAddr,
+  } = React.useContext(EthContext) as ctx;
 
   const connect = async () => {
     await (window as any).ethereum.request({ method: "eth_requestAccounts" });
-    setAddress((window as any).ethereum.selectedAddress);
+    const connectedAddr = (window as any).ethereum.selectedAddress;
+    setAddress(connectedAddr);
+    setDisplayAddr(shortenAddress(connectedAddr || ""));
     setProvider(new BrowserProvider((window as any).ethereum));
+    const ensName = await ensLooker.reverseLookup(connectedAddr);
+    if (ensName) {
+      setDisplayAddr(ensName);
+    }
   };
 
   return (
@@ -52,9 +72,7 @@ function Layout() {
           {(window as any).ethereum && !address && (
             <button onClick={connect}>Connect</button>
           )}
-          {(window as any).ethereum && address && (
-            <div>{shortenAddress(address)}</div>
-          )}
+          {(window as any).ethereum && address && <div>{displayAddr}</div>}
         </div>
       </div>
 
