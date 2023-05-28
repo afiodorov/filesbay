@@ -150,7 +150,7 @@ export const EditableItem: React.FC<{
 
   return (
     <div className="Sell">
-      <strong>File</strong>
+      <label htmlFor={`file-${props.fileNum}`}>File</label>
       <pre>
         <input
           type="text"
@@ -158,9 +158,10 @@ export const EditableItem: React.FC<{
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          id={`file-${props.fileNum}`}
         />
       </pre>
-      <strong>Description</strong>
+      <label htmlFor={`description-${props.fileNum}`}>Description</label>
       <pre>
         <textarea
           value={desc}
@@ -168,9 +169,12 @@ export const EditableItem: React.FC<{
             setDesc(e.target.value);
           }}
           className="SellDescription"
+          id={`description-${props.fileNum}`}
         />
       </pre>
-      <strong>Encrypted Message</strong>
+      <label htmlFor={`encrypted-msg-${props.fileNum}`}>
+        Encrypted Message
+      </label>
       <pre>
         <textarea
           value={encryptedMessage}
@@ -178,9 +182,10 @@ export const EditableItem: React.FC<{
             setEncryptedMessage(e.target.value);
           }}
           className="SellDescription"
+          id={`encrypted-msg-${props.fileNum}`}
         />
       </pre>
-      <strong>Price</strong>
+      <label htmlFor={`price-${props.fileNum}`}>Price</label>
       <pre>
         <input
           type="number"
@@ -189,6 +194,7 @@ export const EditableItem: React.FC<{
           onChange={(e) => {
             setPrice(Number(e.target.value));
           }}
+          id={`price-${props.fileNum}`}
         />
         {props.currency}
       </pre>
@@ -257,7 +263,7 @@ export default function SellNew(props: {
 
   return (
     <div className="Sell">
-      <strong>File</strong>
+      <label htmlFor="file">File</label>
       <pre>
         <input
           type="text"
@@ -265,9 +271,10 @@ export default function SellNew(props: {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          id="file"
         />
       </pre>
-      <strong>Description</strong>
+      <label htmlFor="description">Description</label>
       <pre>
         <textarea
           value={desc}
@@ -275,9 +282,10 @@ export default function SellNew(props: {
             setDesc(e.target.value);
           }}
           className="SellDescription"
+          id="description"
         />
       </pre>
-      <strong>Price</strong>
+      <label htmlFor="price">Price</label>
       <pre>
         <input
           type="number"
@@ -286,6 +294,7 @@ export default function SellNew(props: {
           onChange={(e) => {
             setPrice(Number(e.target.value));
           }}
+          id="price"
         />
         <select
           value={currency}
