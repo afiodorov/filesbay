@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract Item is ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
@@ -20,7 +21,7 @@ contract Item is ERC721Enumerable, Ownable {
     }
 }
 
-contract Listings {
+contract Listings is ReentrancyGuard {
     struct File {
         string fileName;
         string fileDescription;
@@ -84,7 +85,7 @@ contract Listings {
         files[_fileIndex].priceTokenAddress = _newTokenAddress;
     }
 
-    function buy(uint256 _fileIndex) public {
+    function buy(uint256 _fileIndex) public nonReentrant {
         File memory file = files[_fileIndex];
 
         require(
